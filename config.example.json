@@ -1,0 +1,15 @@
+{
+  "root": "https://jsonplaceholder.typicode.com",
+  "endpoints": [
+    {
+      "name": "First Endpoint",
+      "path": "/posts",
+      "method": "GET"
+    },
+    {
+      "name": "Second Endpoint",
+      "path": "/comments",
+      "method": "POST"
+    }
+  ]
+}
