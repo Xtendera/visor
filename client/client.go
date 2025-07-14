@@ -2,6 +2,7 @@ package client
 
 import (
 	"ayode.org/visor/config"
+	"bytes"
 	"io"
 	"log/slog"
 	"net/http"
@@ -19,35 +20,47 @@ func New(cfg config.Config) Client {
 	return c
 }
 
-func sendRequest(req *http.Request) (*http.Response, error) {
+func sendRequest(req *http.Request, responseBody *string) (*http.Response, error) {
 	client := &http.Client{}
-	_, err := client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+
+	defer resp.Body.Close()
+
+	if responseBody != nil {
+		// Comparable to io.ReadAll(), but this has less allocations and therefore better performance.
+		buf := &bytes.Buffer{}
+		_, err := io.Copy(buf, resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		*responseBody = buf.String()
+	}
+
+	return resp, nil
 }
 
 func (c Client) Execute() {
 	for _, endpoint := range c.cfg.Endpoints {
-		resp, err := http.Get(c.cfg.Root + endpoint.Path)
 		logger := slog.With("taskName", endpoint.Name)
+		reqObj, err := http.NewRequest(endpoint.Method, c.cfg.Root+endpoint.Path, nil)
+		if err != nil {
+			logger.Error("Error when creating request: " + err.Error())
+			continue
+		}
+		resp, err := sendRequest(reqObj, nil)
+
 		if err != nil {
 			logger.Error("Error when sending request: " + err.Error())
 			continue
 		}
-
 		// Check if response code is successful
 		if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			logger.Error("Unexpected status code: " + strconv.Itoa(resp.StatusCode))
 		}
 
-		defer resp.Body.Close()
-		_, err = io.ReadAll(resp.Body)
-		if err != nil {
-			logger.Error("Error when reading request: " + err.Error())
-			continue
-		}
 		logger.Info("Task Succeeded")
 	}
 }
