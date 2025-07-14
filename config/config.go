@@ -21,6 +21,7 @@ type Endpoint struct {
 	Method       string      `json:"method" validate:"oneof=GET POST PUT HEAD DELETE OPTIONS PATCH"`
 	Body         interface{} `json:"body"`
 	AcceptStatus []uint16    `json:"acceptStatus" validate:"required"`
+	SchemaFile   string      `json:"schemaFile"`
 }
 
 // This function checks if the given root URL is valid, and contains a scheme (e.g. https://), and is absolute (contains a host)

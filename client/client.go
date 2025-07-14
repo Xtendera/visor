@@ -2,6 +2,7 @@ package client
 
 import (
 	"ayode.org/visor/config"
+	"ayode.org/visor/validations"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -24,26 +25,22 @@ func New(cfg config.Config) Client {
 	return c
 }
 
-func sendRequest(req *http.Request, responseBody *string) (*http.Response, error) {
+func sendRequest(req *http.Request) (*http.Response, io.Reader, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	defer resp.Body.Close()
 
-	if responseBody != nil {
-		// Comparable to io.ReadAll(), but this has less allocations and therefore better performance.
-		buf := &bytes.Buffer{}
-		_, err := io.Copy(buf, resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		*responseBody = buf.String()
+	buf := &bytes.Buffer{}
+	_, err = io.Copy(buf, resp.Body)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return resp, nil
+	return resp, buf, nil
 }
 
 func validateStatus(endpoint *config.Endpoint, statusCode uint16) error {
@@ -105,8 +102,7 @@ func (c Client) Execute() {
 		}
 
 		start := time.Now()
-		var respBody string
-		resp, err := sendRequest(reqObj, &respBody)
+		resp, respBody, err := sendRequest(reqObj)
 		elapsed := time.Now().Sub(start)
 
 		if err != nil {
@@ -120,7 +116,14 @@ func (c Client) Execute() {
 			logger.Error(err.Error())
 			continue
 		}
+		if endpoint.SchemaFile != "" {
+			err = validations.ValidateSchemaFromFile(respBody, endpoint.SchemaFile)
+			if err != nil {
+				logger.Error("Failed to validate response body: " + err.Error())
+				continue
+			}
 
+		}
 		logger.With("elapsed", elapsed).Info("Task Succeeded")
 	}
 }

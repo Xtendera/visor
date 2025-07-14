@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "method": {
+      "type": "string",
+      "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+    },
+    "protocol": {
+      "type": "string",
+      "enum": ["http", "https"]
+    },
+    "host": {
+      "type": "string",
+      "format": "hostname"
+    },
+    "path": {
+      "type": "string"
+    },
+    "ip": {
+      "type": "string",
+      "pattern": "^\\d{1,3}(\\.\\d{1,3}){3}:\\d+$"
+    },
+    "headers": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "parsedQueryParams": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": ["method", "protocol", "host", "path", "ip", "headers", "parsedQueryParams"],
+  "additionalProperties": false
+}
