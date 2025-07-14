@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net/http"
 	"reflect"
+	"time"
 )
 
 type Client struct {
@@ -82,7 +83,7 @@ func marshalReqBody(body interface{}, buffer *io.Reader) error {
 
 func (c Client) Execute() {
 	for _, endpoint := range c.cfg.Endpoints {
-		logger := slog.With("taskName", endpoint.Name)
+		logger := slog.With("taskName", endpoint.Name, "path", endpoint.Path, "method", endpoint.Method)
 
 		var reqBuff io.Reader
 		err := marshalReqBody(endpoint.Body, &reqBuff)
@@ -103,8 +104,10 @@ func (c Client) Execute() {
 			reqObj.Header.Set("Content-Type", "text/plain")
 		}
 
+		start := time.Now()
 		var respBody string
 		resp, err := sendRequest(reqObj, &respBody)
+		elapsed := time.Now().Sub(start)
 
 		if err != nil {
 			logger.Error("Error when sending request: " + err.Error())
@@ -118,6 +121,6 @@ func (c Client) Execute() {
 			continue
 		}
 
-		logger.Info("Task Succeeded")
+		logger.With("elapsed", elapsed).Info("Task Succeeded")
 	}
 }

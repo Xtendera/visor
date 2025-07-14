@@ -9,21 +9,25 @@ import (
 )
 
 func incorrectArg() {
-	fmt.Printf("That is not a valid subcommand!")
+	fmt.Printf("That is not a valid subcommand!\n")
 	os.Exit(1)
 }
 
 func runCfg() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	slog.SetDefault(logger)
 	if len(os.Args) < 3 {
-		slog.Error("No configuration path provided!")
+		slog.Error("No configuration path provided!\n")
 		os.Exit(2)
 		return
 	}
+
 	cfgPath := os.Args[2]
 	cfg := config.Parse(cfgPath)
 	c := client.New(cfg)
+
+	logger = logger.With("root", cfg.Root)
+	slog.SetDefault(logger)
+	
 	c.Execute()
 }
 
