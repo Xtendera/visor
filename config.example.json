@@ -1,15 +1,22 @@
 {
-  "root": "https://jsonplaceholder.typicode.com",
+  "root": "https://echo.free.beeceptor.com",
   "endpoints": [
     {
       "name": "First Endpoint",
       "path": "/posts",
-      "method": "GET"
+      "method": "GET",
+      "acceptStatus": [
+        200
+      ]
     },
     {
       "name": "Second Endpoint",
       "path": "/comments",
-      "method": "POST"
+      "method": "POST",
+      "body": "TEST BODY",
+      "acceptStatus": [
+        200
+      ]
     }
   ]
 }

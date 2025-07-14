@@ -28,11 +28,6 @@ func runCfg() {
 }
 
 func main() {
-	//logger := slog.New(slog.NewTextHandler(os.Stdout, nil)).With("me", "hola")
-	//logger.Info("hello world")
-	//slog.SetDefault(logger)
-	//slog.Info("hello world")
-
 	if len(os.Args) < 2 {
 		incorrectArg()
 	}
