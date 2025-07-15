@@ -3,8 +3,7 @@
   "type": "object",
   "properties": {
     "method": {
-      "type": "string",
-      "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+      "$ref": "firstEndpoint-method.schema.json"
     },
     "protocol": {
       "type": "string",

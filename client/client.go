@@ -34,8 +34,10 @@ func sendRequest(req *http.Request) (*http.Response, io.Reader, error) {
 
 	defer resp.Body.Close()
 
+	// Same as io.ReadAll(), but has less allocations therefore better performance
 	buf := &bytes.Buffer{}
 	_, err = io.Copy(buf, resp.Body)
+	fmt.Printf(buf.String())
 	if err != nil {
 		return nil, nil, err
 	}
@@ -78,7 +80,7 @@ func marshalReqBody(body interface{}, buffer *io.Reader) error {
 	return nil
 }
 
-func (c Client) Execute() {
+func (c *Client) Execute() {
 	for _, endpoint := range c.cfg.Endpoints {
 		logger := slog.With("taskName", endpoint.Name, "path", endpoint.Path, "method", endpoint.Method)
 
@@ -101,6 +103,16 @@ func (c Client) Execute() {
 			reqObj.Header.Set("Content-Type", "text/plain")
 		}
 
+		// Add custom headers (config-level)
+		for _, header := range c.cfg.Headers {
+			reqObj.Header.Set(header.Key, header.Value)
+		}
+
+		// Add custom headers (request-level)
+		for _, header := range endpoint.Headers {
+			reqObj.Header.Set(header.Key, header.Value)
+		}
+
 		start := time.Now()
 		resp, respBody, err := sendRequest(reqObj)
 		elapsed := time.Now().Sub(start)
@@ -116,8 +128,8 @@ func (c Client) Execute() {
 			logger.Error(err.Error())
 			continue
 		}
-		if endpoint.SchemaFile != "" {
-			err = validations.ValidateSchemaFromFile(respBody, endpoint.SchemaFile)
+		if endpoint.Schema != "" {
+			err = validations.ValidateSchemaFromPath(respBody, endpoint.Schema)
 			if err != nil {
 				logger.Error("Failed to validate response body: " + err.Error())
 				continue

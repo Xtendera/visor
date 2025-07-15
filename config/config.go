@@ -12,6 +12,7 @@ import (
 
 type Config struct {
 	Root      string     `json:"root"`
+	Headers   []Header   `json:"headers"`
 	Endpoints []Endpoint `json:"endpoints" validate:"min=1,dive"`
 }
 
@@ -19,9 +20,15 @@ type Endpoint struct {
 	Name         string      `json:"name" validate:"required"`
 	Path         string      `json:"path" validate:"required"`
 	Method       string      `json:"method" validate:"oneof=GET POST PUT HEAD DELETE OPTIONS PATCH"`
+	Headers      []Header    `json:"headers"`
 	Body         interface{} `json:"body"`
 	AcceptStatus []uint16    `json:"acceptStatus" validate:"required"`
-	SchemaFile   string      `json:"schemaFile"`
+	Schema       string      `json:"schema"`
+}
+
+type Header struct {
+	Key   string `json:"key" validate:"required"`
+	Value string `json:"value" validate:"required"`
 }
 
 // This function checks if the given root URL is valid, and contains a scheme (e.g. https://), and is absolute (contains a host)

@@ -5,9 +5,9 @@ import (
 	"io"
 )
 
-func ValidateSchemaFromFile(reader io.Reader, schemaFile string) error {
+func ValidateSchemaFromPath(reader io.Reader, schemaPath string) error {
 	c := jsonschema.NewCompiler()
-	sch, err := c.Compile(schemaFile)
+	sch, err := c.Compile(schemaPath)
 	if err != nil {
 		return err
 	}
