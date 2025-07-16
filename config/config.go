@@ -50,13 +50,13 @@ func isValidAbsoluteURL(str string) error {
 func Parse(cfgFile string) Config {
 	raw, err := os.ReadFile(cfgFile)
 	if err != nil {
-		slog.Error("Could not read configuration: " + err.Error())
+		slog.Error("Failrd to read configuration: " + err.Error())
 		os.Exit(3)
 	}
 	var cfg Config
 	err = json.Unmarshal(raw, &cfg)
 	if err != nil {
-		slog.Error("Could not unmarshal configuration: " + err.Error())
+		slog.Error("Failed to unmarshal configuration: " + err.Error())
 		os.Exit(4)
 	}
 
@@ -64,7 +64,7 @@ func Parse(cfgFile string) Config {
 	validate := validator.New()
 	err = validate.Struct(cfg)
 	if err != nil {
-		slog.Error("Could not validate configuration: " + err.Error())
+		slog.Error("Failed to validate configuration: " + err.Error())
 		os.Exit(5)
 	}
 

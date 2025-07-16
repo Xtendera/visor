@@ -9,7 +9,7 @@ import (
 )
 
 func incorrectArg() {
-	fmt.Printf("That is not a valid subcommand!\n")
+	fmt.Printf("Invalid subcommand!\n")
 	os.Exit(1)
 }
 

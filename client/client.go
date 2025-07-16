@@ -5,7 +5,6 @@ import (
 	"ayode.org/visor/validations"
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -54,7 +53,7 @@ func validateStatus(endpoint *config.Endpoint, statusCode uint16) error {
 			return nil
 		}
 	}
-	return errors.New(fmt.Sprintf("Invalid HTTP status recieved: %d", statusCode))
+	return fmt.Errorf("invalid HTTP status recieved: %d", statusCode)
 }
 
 func isJSONBody(body interface{}) bool {
@@ -72,7 +71,7 @@ func marshalReqBody(body interface{}, buffer *io.Reader) error {
 	if body != nil {
 		jsonBody, err := json.Marshal(body)
 		if err != nil {
-			return errors.New(fmt.Sprintf("Could not marshal request body: %s", err.Error()))
+			return fmt.Errorf("could not marshal request body: %w", err)
 		}
 
 		*buffer = bytes.NewBuffer(jsonBody)
@@ -87,13 +86,13 @@ func (c *Client) Execute() {
 		var reqBuff io.Reader
 		err := marshalReqBody(endpoint.Body, &reqBuff)
 		if err != nil {
-			logger.Error("Error when marshaling request body:" + err.Error())
+			logger.Error("Failed to marshal request body:" + err.Error())
 			continue
 		}
 		reqObj, err := http.NewRequest(endpoint.Method, c.cfg.Root+endpoint.Path, reqBuff)
 
 		if err != nil {
-			logger.Error("Error when creating request: " + err.Error())
+			logger.Error("Failed to create request: " + err.Error())
 			continue
 		}
 
@@ -118,7 +117,7 @@ func (c *Client) Execute() {
 		elapsed := time.Now().Sub(start)
 
 		if err != nil {
-			logger.Error("Error when sending request: " + err.Error())
+			logger.Error("Failed to send request: " + err.Error())
 			continue
 		}
 
