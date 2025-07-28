@@ -35,8 +35,7 @@ func sendRequest(req *http.Request) (*http.Response, io.Reader, error) {
 
 	// Same as io.ReadAll(), but has less allocations therefore better performance
 	buf := &bytes.Buffer{}
-	_, err = io.Copy(buf, resp.Body)
-	fmt.Printf(buf.String())
+	_, err = io.Copy(buf, resp.Body
 	if err != nil {
 		return nil, nil, err
 	}
