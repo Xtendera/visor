@@ -14,6 +14,7 @@ type Config struct {
 	Root      string     `json:"root"`
 	Headers   []Header   `json:"headers"`
 	Endpoints []Endpoint `json:"endpoints" validate:"min=1,dive"`
+	Cookies   []Cookie   `json:"cookies"`
 }
 
 type Endpoint struct {
@@ -27,6 +28,11 @@ type Endpoint struct {
 }
 
 type Header struct {
+	Key   string `json:"key" validate:"required"`
+	Value string `json:"value" validate:"required"`
+}
+
+type Cookie struct {
 	Key   string `json:"key" validate:"required"`
 	Value string `json:"value" validate:"required"`
 }

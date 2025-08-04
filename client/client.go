@@ -6,22 +6,32 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/net/publicsuffix"
 	"io"
 	"log/slog"
 	"net/http"
+	"net/http/cookiejar"
 	"reflect"
 	"time"
 )
 
 type Client struct {
 	cfg config.Config
+	jar *cookiejar.Jar
 }
 
-func New(cfg config.Config) Client {
+func New(cfg config.Config) (*Client, error) {
+	jar, err := cookiejar.New(&cookiejar.Options{
+		PublicSuffixList: publicsuffix.List,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize the cookiejar")
+	}
 	c := Client{
 		cfg,
+		jar,
 	}
-	return c
+	return &c, nil
 }
 
 func sendRequest(req *http.Request) (*http.Response, io.Reader, error) {
@@ -35,7 +45,7 @@ func sendRequest(req *http.Request) (*http.Response, io.Reader, error) {
 
 	// Same as io.ReadAll(), but has less allocations therefore better performance
 	buf := &bytes.Buffer{}
-	_, err = io.Copy(buf, resp.Body
+	_, err = io.Copy(buf, resp.Body)
 	if err != nil {
 		return nil, nil, err
 	}
