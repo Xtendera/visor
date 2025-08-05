@@ -6,6 +6,12 @@
       "value": "en-US,en;q=0.5"
     }
   ],
+  "jar": [
+    {
+      "name": "permanentcookie1",
+      "value": "cookievalue1"
+    }
+  ],
   "endpoints": [
     {
       "name": "First Endpoint",
@@ -15,7 +21,19 @@
         {
           "key": "User-Agent",
           "value": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"
-}
+        }
+      ],
+      "cookies": [
+        {
+          "name": "tempcookie1",
+          "value": "cookievalue1"
+        }
+      ],
+      "jar": [
+        {
+          "name": "permanentcookie2",
+          "value": "cookievalue2"
+        }
       ],
       "acceptStatus": [
         200
@@ -24,8 +42,8 @@
     },
     {
       "name": "Second Endpoint",
-      "path": "/comments",
-      "method": "POST",
+      "path": "/cookies",
+      "method": "GET",
       "body": "TEST BODY",
       "acceptStatus": [
         200

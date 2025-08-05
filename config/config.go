@@ -11,10 +11,10 @@ import (
 )
 
 type Config struct {
-	Root      string     `json:"root"`
+	Root      string     `json:"root" validate:"required"`
 	Headers   []Header   `json:"headers"`
+	Jar       []Cookie   `json:"jar"`
 	Endpoints []Endpoint `json:"endpoints" validate:"min=1,dive"`
-	Cookies   []Cookie   `json:"cookies"`
 }
 
 type Endpoint struct {
@@ -22,6 +22,8 @@ type Endpoint struct {
 	Path         string      `json:"path" validate:"required"`
 	Method       string      `json:"method" validate:"oneof=GET POST PUT HEAD DELETE OPTIONS PATCH"`
 	Headers      []Header    `json:"headers"`
+	Cookies      []Cookie    `json:"cookies"`
+	Jar          []Cookie    `json:"jar"`
 	Body         interface{} `json:"body"`
 	AcceptStatus []uint16    `json:"acceptStatus" validate:"required"`
 	Schema       string      `json:"schema"`
@@ -32,8 +34,9 @@ type Header struct {
 	Value string `json:"value" validate:"required"`
 }
 
+// Cookie Although the struct http.Cookie does exist, it does not contain JSON serialization keys, hence the need for a custom type
 type Cookie struct {
-	Key   string `json:"key" validate:"required"`
+	Name  string `json:"name" validate:"required"`
 	Value string `json:"value" validate:"required"`
 }
 

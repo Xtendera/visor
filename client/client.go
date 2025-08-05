@@ -11,6 +11,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/cookiejar"
+	"net/url"
 	"reflect"
 	"time"
 )
@@ -18,6 +19,7 @@ import (
 type Client struct {
 	cfg config.Config
 	jar *cookiejar.Jar
+	u   *url.URL
 }
 
 func New(cfg config.Config) (*Client, error) {
@@ -27,15 +29,26 @@ func New(cfg config.Config) (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize the cookiejar")
 	}
+
+	u, err := url.Parse(cfg.Root)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse the root URL")
+	}
+
 	c := Client{
 		cfg,
 		jar,
+		u,
 	}
+
+	c.SetCookies(c.cfg.Jar)
 	return &c, nil
 }
 
-func sendRequest(req *http.Request) (*http.Response, io.Reader, error) {
-	client := &http.Client{}
+func (c *Client) sendRequest(req *http.Request) (*http.Response, io.Reader, error) {
+	client := &http.Client{
+		Jar: c.jar,
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, nil, err
@@ -99,7 +112,6 @@ func (c *Client) Execute() {
 			continue
 		}
 		reqObj, err := http.NewRequest(endpoint.Method, c.cfg.Root+endpoint.Path, reqBuff)
-
 		if err != nil {
 			logger.Error("Failed to create request: " + err.Error())
 			continue
@@ -121,14 +133,22 @@ func (c *Client) Execute() {
 			reqObj.Header.Set(header.Key, header.Value)
 		}
 
+		// Add cookies from jar (config-level)
+		c.SetCookies(endpoint.Jar)
+
+		// Add cookies (request-level)
+		c.SetReqCookies(reqObj, endpoint.Cookies)
+
 		start := time.Now()
-		resp, respBody, err := sendRequest(reqObj)
+		resp, respBody, err := c.sendRequest(reqObj)
 		elapsed := time.Now().Sub(start)
 
+		respString, err := io.ReadAll(respBody)
 		if err != nil {
-			logger.Error("Failed to send request: " + err.Error())
+			logger.Error("Failed to read response body: " + err.Error())
 			continue
 		}
+		println(string(respString))
 
 		// Check if response code is the expected value
 		err = validateStatus(&endpoint, uint16(resp.StatusCode))
@@ -137,7 +157,9 @@ func (c *Client) Execute() {
 			continue
 		}
 		if endpoint.Schema != "" {
-			err = validations.ValidateSchemaFromPath(respBody, endpoint.Schema)
+			// Create a new reader from the response bytes for validation
+			respReader := bytes.NewReader(respString)
+			err = validations.ValidateSchemaFromPath(respReader, endpoint.Schema)
 			if err != nil {
 				logger.Error("Failed to validate response body: " + err.Error())
 				continue
