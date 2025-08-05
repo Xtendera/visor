@@ -23,11 +23,14 @@ func runCfg() {
 
 	cfgPath := os.Args[2]
 	cfg := config.Parse(cfgPath)
-	c := client.New(cfg)
+	c, err := client.New(cfg)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error when initializing client: %s", err.Error()))
+	}
 
 	logger = logger.With("root", cfg.Root)
 	slog.SetDefault(logger)
-	
+
 	c.Execute()
 }
 
