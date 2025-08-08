@@ -11,10 +11,11 @@ import (
 )
 
 type Config struct {
-	Root      string     `json:"root" validate:"required"`
-	Headers   []Header   `json:"headers"`
-	Jar       []Cookie   `json:"jar"`
-	Endpoints []Endpoint `json:"endpoints" validate:"min=1,dive"`
+	Root            string     `json:"root" validate:"required"`
+	Headers         []Header   `json:"headers"`
+	Jar             []Cookie   `json:"jar"`
+	Endpoints       []Endpoint `json:"endpoints" validate:"min=1,dive"`
+	SaveResponseDir string     `json:"saveResponseDir"`
 }
 
 type Endpoint struct {
@@ -26,6 +27,7 @@ type Endpoint struct {
 	Jar          []Cookie    `json:"jar"`
 	Body         interface{} `json:"body"`
 	AcceptStatus []uint16    `json:"acceptStatus" validate:"required"`
+	SaveResponse string      `json:"saveResponse"`
 	Schema       string      `json:"schema"`
 }
 
@@ -40,7 +42,7 @@ type Cookie struct {
 	Value string `json:"value" validate:"required"`
 }
 
-// This function checks if the given root URL is valid, and contains a scheme (e.g. https://), and is absolute (contains a host)
+// isValidAbsoluteURL checks if the given root URL is valid, and contains a scheme (e.g. https://), and is absolute (contains a host)
 func isValidAbsoluteURL(str string) error {
 	u, err := url.Parse(str)
 	if err != nil {
@@ -59,7 +61,7 @@ func isValidAbsoluteURL(str string) error {
 func Parse(cfgFile string) Config {
 	raw, err := os.ReadFile(cfgFile)
 	if err != nil {
-		slog.Error("Failrd to read configuration: " + err.Error())
+		slog.Error("Failed to read configuration: " + err.Error())
 		os.Exit(3)
 	}
 	var cfg Config

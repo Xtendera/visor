@@ -1,5 +1,6 @@
 {
   "root": "https://echo.free.beeceptor.com",
+  "saveResponseDir": "responses/",
   "headers": [
     {
       "key": "Accept-Language",
@@ -47,7 +48,8 @@
       "body": "TEST BODY",
       "acceptStatus": [
         200
-      ]
+      ],
+      "saveResponse": "Second Custom Endpoint.json"
     }
   ]
 }

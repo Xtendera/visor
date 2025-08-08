@@ -28,3 +28,6 @@ go.work.sum
 .vscode/
 .idea/
 .DS_Store
+
+# Response files
+responses/

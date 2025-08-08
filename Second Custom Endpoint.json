@@ -1,0 +1,23 @@
+{
+  "method": "GET",
+  "protocol": "https",
+  "host": "echo.free.beeceptor.com",
+  "path": "/cookies",
+  "ip": "143.244.110.149:50795",
+  "headers": {
+    "Host": "echo.free.beeceptor.com",
+    "User-Agent": "Go-http-client/2.0",
+    "Content-Length": "11",
+    "Accept-Encoding": "gzip",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Content-Type": "text/plain",
+    "Cookie": "permanentcookie1=cookievalue1; permanentcookie2=cookievalue2",
+    "Via": "2.0 Caddy"
+  },
+  "parsedQueryParams": {},
+  "rawBody": "\"TEST BODY\"",
+  "parsedCookies": {
+    "permanentcookie1": "cookievalue1",
+    "permanentcookie2": "cookievalue2"
+  }
+}
