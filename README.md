@@ -2,6 +2,12 @@
 
 Fast API monitor built for consistency and reliability. The configuration-first approach keeps it simple and flexible.
 
+## Installation
+You can currently install through go:
+`go install github.com/Xtendera/visor@latest
+Or a specific version:
+`go install github.com/Xtendera/visor@0.0.1a6`
+
 ## Usage
 
 ```bash
