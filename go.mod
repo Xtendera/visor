@@ -1,4 +1,4 @@
-module ayode.org/visor
+module github.com/Xtendera/visor
 
 go 1.24
 
