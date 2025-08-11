@@ -4,6 +4,7 @@ import (
 	"ayode.org/visor/config"
 	"ayode.org/visor/util"
 	"ayode.org/visor/validations"
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -112,9 +113,18 @@ func marshalReqBody(body interface{}, buffer *io.Reader) error {
 // prepareRequest creates and configures an HTTP request for the given endpoint
 func (c *Client) prepareRequest(endpoint config.Endpoint) (*http.Request, error) {
 	var reqBuff io.Reader
-	err := marshalReqBody(endpoint.Body, &reqBuff)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request body: %w", err)
+	if endpoint.Body != nil {
+		err := marshalReqBody(endpoint.Body, &reqBuff)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal request body: %w", err)
+		}
+	}
+	if endpoint.BodyFile != "" {
+		content, err := os.Open(endpoint.BodyFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read request body: %w", err)
+		}
+		reqBuff = bufio.NewReader(content)
 	}
 
 	reqObj, err := http.NewRequest(endpoint.Method, c.cfg.Root+endpoint.Path, reqBuff)
@@ -131,7 +141,7 @@ func (c *Client) prepareRequest(endpoint config.Endpoint) (*http.Request, error)
 // setRequestHeaders sets content-type and custom headers for the request
 func (c *Client) setRequestHeaders(req *http.Request, endpoint config.Endpoint) {
 	// Set content type based on body type
-	if isJSONBody(endpoint.Body) {
+	if endpoint.BodyFile == "" && isJSONBody(endpoint.Body) {
 		req.Header.Set("Content-Type", "application/json")
 	} else {
 		req.Header.Set("Content-Type", "text/plain")
@@ -159,10 +169,13 @@ func (c *Client) setRequestCookies(req *http.Request, endpoint config.Endpoint) 
 
 // processResponse handles the response processing and validation
 func (c *Client) processResponse(resp *http.Response, respBody io.Reader, endpoint config.Endpoint) error {
-	respBytes, err := io.ReadAll(respBody)
+	buf := &bytes.Buffer{}
+	_, err := io.Copy(buf, respBody)
 	if err != nil {
 		return err
 	}
+
+	respBytes := buf.Bytes()
 
 	// Export to filesystem
 	err = c.exportResponse(respBytes, endpoint)

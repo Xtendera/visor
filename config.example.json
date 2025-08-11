@@ -39,13 +39,13 @@
       "acceptStatus": [
         200
       ],
-      "schema": "exampleSchemas/firstEndpoint.schema.json"
+      "schema": "example/schemas/firstEndpoint.schema.json"
     },
     {
       "name": "Second Endpoint",
       "path": "/cookies",
       "method": "GET",
-      "body": "TEST BODY",
+      "bodyFile": "example/bodies/secondEndpoint.txt",
       "acceptStatus": [
         200
       ],

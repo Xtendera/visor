@@ -26,6 +26,7 @@ type Endpoint struct {
 	Cookies      []Cookie    `json:"cookies"`
 	Jar          []Cookie    `json:"jar"`
 	Body         interface{} `json:"body"`
+	BodyFile     string      `json:"bodyFile"`
 	AcceptStatus []uint16    `json:"acceptStatus" validate:"required"`
 	SaveResponse string      `json:"saveResponse"`
 	Schema       string      `json:"schema"`

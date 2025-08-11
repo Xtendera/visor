@@ -36,6 +36,8 @@ Each endpoint object contains the following additional properties:
 
 `body` (object, optional): The request body to send. If provided, it will be sent as JSON if the value is an object or array, otherwise as plain text.
 
+`bodyFile` (string, optional): A file which will be read and sent as the request body. It will always be sent as plaintext, you can manually set the header through the headers property to circumvent this.
+
 `acceptStatus` (array of integers): List of HTTP status codes that are considered successful for this endpoint. At least one value is required.
 
 `schema` (string, optional): Path to a JSON schema file used to validate the response body.
