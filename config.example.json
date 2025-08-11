@@ -49,7 +49,7 @@
       "acceptStatus": [
         200
       ],
-      "saveResponse": "Second Custom Endpoint.json"
+      "saveResponse": "responses/Second Custom Endpoint.json"
     }
   ]
 }
