@@ -1,13 +1,13 @@
 package client
 
 import (
-	"ayode.org/visor/config"
-	"ayode.org/visor/util"
-	"ayode.org/visor/validations"
 	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/Xtendera/visor/config"
+	"github.com/Xtendera/visor/util"
+	"github.com/Xtendera/visor/validations"
 	"golang.org/x/net/publicsuffix"
 	"io"
 	"log/slog"

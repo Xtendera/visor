@@ -1,9 +1,9 @@
 package main
 
 import (
-	"ayode.org/visor/client"
-	"ayode.org/visor/config"
 	"fmt"
+	"github.com/Xtendera/visor/client"
+	"github.com/Xtendera/visor/config"
 	"log/slog"
 	"os"
 )

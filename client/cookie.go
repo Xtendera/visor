@@ -1,7 +1,7 @@
 package client
 
 import (
-	"ayode.org/visor/config"
+	"github.com/Xtendera/visor/config"
 	"net/http"
 )
 
