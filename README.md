@@ -12,6 +12,10 @@ Or a specific version:
 go install github.com/Xtendera/visor@0.0.1a6
 ```
 
+You may also be required to add GOPATH into your system PATH. Use the following command to append this into your shell file. Replace `.bashrc` with the file specific to your shell:
+```
+echo 'export PATH="$(go env GOPATH)/bin:$PATH"' >> ~/.bashrc
+```
 ## Usage
 
 ```bash
