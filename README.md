@@ -24,7 +24,7 @@ visor run <CONFIG_FILE>.json
 
 ## Configuration
 
-The config is stored in a JSON file. Please look at `config.example.json` for a functional configuration file.
+The config is stored in a JSON file. Please look at `config.example.json` for a functional configuration file. **NOTE: ** You will also need the `example/` directory in the same location as the example configuration for the project to run. You will find the config and the example directory in this git project.
 
 Here are the possible properties for the config:
 
