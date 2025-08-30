@@ -31,3 +31,6 @@ go.work.sum
 
 # Response files
 responses/
+
+# Build files
+build/
