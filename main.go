@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Xtendera/visor/client"
 	"github.com/Xtendera/visor/config"
+	"github.com/Xtendera/visor/util"
 	"log/slog"
 	"os"
 )
@@ -34,6 +35,10 @@ func runCfg() {
 	c.Execute()
 }
 
+func printVersion() {
+	fmt.Printf("Visor %s\n", util.GetVersion())
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		incorrectArg()
@@ -42,6 +47,9 @@ func main() {
 	switch os.Args[1] {
 	case "run":
 		runCfg()
+		break
+	case "version":
+		printVersion()
 		break
 	default:
 		incorrectArg()

@@ -3,6 +3,11 @@ set -euo pipefail
 
 APP_NAME="visor"
 OUTPUT_DIR="build"
+PACKAGE="github.com/Xtendera/visor"
+
+COMMIT_HASH="$(git rev-parse --short HEAD)"
+echo "$COMMIT_HASH"
+VERSION="${VERSION:-dev}"
 
 mkdir -p "$OUTPUT_DIR"
 
@@ -17,6 +22,11 @@ TARGETS=(
   "freebsd/amd64"
 )
 
+LDFLAGS=(
+  "-X '${PACKAGE}/util.Version=${VERSION}'"
+  "-X '${PACKAGE}/util.CommitHash=${COMMIT_HASH}'"
+)
+
 echo "Compiling $APP_NAME for ${#TARGETS[@]} targets..."
 for target in "${TARGETS[@]}"; do
   GOOS="${target%/*}"
@@ -28,7 +38,7 @@ for target in "${TARGETS[@]}"; do
 
   echo " → $GOOS/$GOARCH"
   CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" \
-    go build -o "$OUTPUT_DIR/${APP_NAME}-${GOOS}-${GOARCH}${EXT}" .
+    go build -ldflags="${LDFLAGS[*]}" -o "$OUTPUT_DIR/${APP_NAME}-${GOOS}-${GOARCH}${EXT}" .
 done
 
 echo "All builds complete. Binaries are in '$OUTPUT_DIR/'"
